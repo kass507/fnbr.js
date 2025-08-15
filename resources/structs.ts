@@ -1070,10 +1070,10 @@ export interface TournamentColors {
 
 export interface TournamentImages {
   squarePosterImage?: string | null;
-  loadingScreenImage?: string;
-  posterBackImage?: string;
+  loadingScreenImage?: string | null;
+  posterBackImage?: string | null;
   posterFrontImage?: string | null;
-  playlistTileImage?: string;
+  playlistTileImage?: string | null;
 }
 
 export interface TournamentTexts {
