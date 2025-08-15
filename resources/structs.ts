@@ -1069,7 +1069,7 @@ export interface TournamentColors {
 }
 
 export interface TournamentImages {
-  squarePosterImage?: string;
+  squarePosterImage?: string | null;
   loadingScreenImage?: string;
   posterBackImage?: string;
   posterFrontImage?: string;
