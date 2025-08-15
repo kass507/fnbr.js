@@ -1072,7 +1072,7 @@ export interface TournamentImages {
   squarePosterImage?: string | null;
   loadingScreenImage?: string;
   posterBackImage?: string;
-  posterFrontImage?: string;
+  posterFrontImage?: string | null;
   playlistTileImage?: string;
 }
 
