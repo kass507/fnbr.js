@@ -126,6 +126,7 @@ export interface TournamentDisplayData {
   schedule_info: string;
   primary_color: string;
   flavor_description: string;
+  square_poster_image : string;
   poster_front_image: string;
   short_format_title: string;
   title_line_2: string;
