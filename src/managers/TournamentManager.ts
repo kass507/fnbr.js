@@ -146,7 +146,16 @@ class TournamentManager extends Base {
       t.eventWindows.forEach((w) => {
         const template = tournaments.templates
           .find((tt: TournamentWindowTemplateData) => tt.eventTemplateId === w.eventTemplateId);
-        if (template) templates.push({ windowId: w.eventWindowId, templateData: template });
+        if (template) {
+          const key = `${t.gameId}:${t.eventId}:${w.eventWindowId}`;
+							const resolvedLocations = tournaments.resolvedWindowLocations?.[key] ?? [];
+
+							templates.push({
+								windowId: w.eventWindowId,
+								templateData,
+								resolvedLocations,
+							});
+        }
       });
 
       constuctedTournaments.push(new Tournament(this.client, t, tournamentDisplayData, templates));
