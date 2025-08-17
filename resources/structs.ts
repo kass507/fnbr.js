@@ -1092,6 +1092,7 @@ export interface TournamentTexts {
 export interface TournamentWindowTemplate {
   windowId: string;
   templateData: TournamentWindowTemplateData;
+  resolvedLocations?: string[];
 }
 
 export interface PresencePartyData {
