@@ -119,6 +119,8 @@ class TournamentWindow {
    */
   public matchCap?: number;
 
+  public resolvedLocations?: string[];
+
   /**
    * The tournament windows's live session attributes
    */
@@ -144,7 +146,7 @@ class TournamentWindow {
    * @param windowData The tournament window's data
    * @param tournamentWindowTemplateData The tournament window's template data
    */
-  constructor(tournament: Tournament, windowData: TournamentWindowData, tournamentWindowTemplateData?: TournamentWindowTemplateData) {
+  constructor(tournament: Tournament, windowData: TournamentWindowData, tournamentWindowTemplateData?: TournamentWindowTemplateData, resolvedLocations?: string[],) {
     Object.defineProperty(this, 'tournament', { value: tournament });
 
     // Window data
@@ -175,6 +177,7 @@ class TournamentWindow {
     this.scoringRules = tournamentWindowTemplateData?.scoringRules;
     this.tiebreakerFormula = tournamentWindowTemplateData?.tiebreakerFormula;
     this.payoutTable = tournamentWindowTemplateData?.payoutTable;
+    this.resolvedLocations = resolvedLocations;
   }
 
   /**

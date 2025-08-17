@@ -158,14 +158,11 @@ class Tournament extends Base {
     };
 
     this.windows = tournamentData.eventWindows.map((w) => {
-      const template = templates.find((t) => t.windowId === w.eventWindowId);
+      const templateData = templates.find((t) => t.windowId === w.eventWindowId)?.templateData;
 
-      return new TournamentWindow(
-        this,
-        w,
-        template?.templateData,
-        template?.resolvedLocations
-      );
+      const resolvedLocations = (templateData as any)?.resolvedLocations;
+
+      return new TournamentWindow(this, w, templateData, resolvedLocations);
     });
   }
 }

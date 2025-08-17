@@ -148,14 +148,19 @@ class TournamentManager extends Base {
           .find((tt: TournamentWindowTemplateData) => tt.eventTemplateId === w.eventTemplateId);
         if (template) {
           const key = `${t.gameId}:${t.eventId}:${w.eventWindowId}`;
-							const resolvedLocations = tournaments.resolvedWindowLocations?.[key] ?? [];
+          const resolvedLocations = tournaments.resolvedWindowLocations?.[key] ?? [];
 
-							templates.push({
-								windowId: w.eventWindowId,
-								templateData,
-								resolvedLocations,
-							});
-        }
+          const enrichedTemplate: TournamentWindowTemplate = {
+            windowId: w.eventWindowId,
+            templateData: {
+              ...template,
+              resolvedLocations, // 👈 agregado sin romper compatibilidad
+            }
+        };
+
+    templates.push(enrichedTemplate);
+  }
+
       });
 
       constuctedTournaments.push(new Tournament(this.client, t, tournamentDisplayData, templates));
