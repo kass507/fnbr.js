@@ -66,6 +66,7 @@ export interface TournamentWindowMetadata {
   RoundType: string;
   ThresholdToAdvanceDivision: number;
   divisionRank: number;
+  hideScoreLocationsIndexes?: number[];
   ServerReplays?: boolean;
   ScheduledMatchmakingInitialDelaySeconds?: number;
   SubgroupId: string;
