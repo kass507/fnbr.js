@@ -43,6 +43,8 @@ export type RegionMappings = {
 export interface TournamentMetadata {
   minimumAccountLevel: number;
   pool: string;
+  tournamentType?: string;
+  webId?: string;
   AccountLockType: string;
   TeamLockType: string;
   DisqualifyType: string;
