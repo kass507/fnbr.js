@@ -149,14 +149,16 @@ class TournamentManager extends Base {
         if (template) {
           const key = `${t.gameId}:${t.eventId}:${w.eventWindowId}`;
           const resolvedLocations = tournaments.resolvedWindowLocations?.[key] ?? [];
-          const scoreLocationPayoutTables = tournaments.scoreLocationPayoutTables?.[key] ?? [];
+          
+          const payoutTableId = tournaments.scoreLocationPayoutTables?.[key];
+          const payoutTable = payoutTableId ? tournaments.payoutTables?.[payoutTableId] : undefined;
 
           const enrichedTemplate: TournamentWindowTemplate = {
             windowId: w.eventWindowId,
             templateData: {
               ...template,
               resolvedLocations,
-              scoreLocationPayoutTables
+              payoutTable
             }
         };
 
