@@ -149,12 +149,14 @@ class TournamentManager extends Base {
         if (template) {
           const key = `${t.gameId}:${t.eventId}:${w.eventWindowId}`;
           const resolvedLocations = tournaments.resolvedWindowLocations?.[key] ?? [];
+          const scoreLocationPayoutTables = tournaments.scoreLocationPayoutTables?.[key] ?? [];
 
           const enrichedTemplate: TournamentWindowTemplate = {
             windowId: w.eventWindowId,
             templateData: {
               ...template,
-              resolvedLocations, // 👈 agregado sin romper compatibilidad
+              resolvedLocations,
+              scoreLocationPayoutTables
             }
         };
 
