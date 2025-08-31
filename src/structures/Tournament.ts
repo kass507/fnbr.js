@@ -161,8 +161,10 @@ class Tournament extends Base {
       const templateData = templates.find((t) => t.windowId === w.eventWindowId)?.templateData;
 
       const resolvedLocations = (templateData as any)?.resolvedLocations;
+      const payoutTable = (templateData as any)?.payoutTable;
+      
 
-      return new TournamentWindow(this, w, templateData, resolvedLocations);
+      return new TournamentWindow(this, w, templateData, resolvedLocations, payoutTable);
     });
   }
 }
