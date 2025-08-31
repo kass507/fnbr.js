@@ -22,6 +22,7 @@ import type User from '../src/structures/user/User';
 import type {
   EpicgamesOAuthData, STWMissionAlertData, STWMissionData, STWProfileLockerSlotData,
   STWTheaterData, TournamentWindowTemplateData,
+  TournamentWindowTemplatePayoutTable,
 } from './httpResponses';
 import type ReceivedFriendMessage from '../src/structures/friend/ReceivedFriendMessage';
 import type STWSurvivor from '../src/structures/stw/STWSurvivor';
@@ -1093,7 +1094,9 @@ export interface TournamentWindowTemplate {
   windowId: string;
   templateData: TournamentWindowTemplateData;
   resolvedLocations?: string[];
+  payoutTable?: TournamentWindowTemplatePayoutTable[];
 }
+
 
 export interface PresencePartyData {
   bIsPrivate?: boolean;
