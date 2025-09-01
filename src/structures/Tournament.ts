@@ -163,8 +163,9 @@ class Tournament extends Base {
       const templateData = template?.templateData;
       const resolvedLocations = template?.resolvedLocations;
       const payoutTable = template?.payoutTable;
+      const payoutTableId = template?.payoutTableId;
 
-      return new TournamentWindow(this, w, templateData, resolvedLocations, payoutTable);
+      return new TournamentWindow(this, w, templateData, resolvedLocations, payoutTable, payoutTableId);
 
     });
   }

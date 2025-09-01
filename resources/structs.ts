@@ -1095,6 +1095,7 @@ export interface TournamentWindowTemplate {
   windowId: string;
   templateData: TournamentWindowTemplateData;
   resolvedLocations?: string[];
+  payoutTableId?: string;
   payoutTable?: TournamentWindowTemplatePayoutTable[];
 }
 

@@ -141,12 +141,14 @@ class TournamentWindow {
    */
   public payoutTable?: TournamentWindowTemplatePayoutTable[];
 
+  public payoutTableId?: string;
+
   /**
    * @param tournament The tournament this window belongs to
    * @param windowData The tournament window's data
    * @param tournamentWindowTemplateData The tournament window's template data
    */
-  constructor(tournament: Tournament, windowData: TournamentWindowData, tournamentWindowTemplateData?: TournamentWindowTemplateData, resolvedLocations?: string[], payoutTable?: TournamentWindowTemplatePayoutTable[]) {
+  constructor(tournament: Tournament, windowData: TournamentWindowData, tournamentWindowTemplateData?: TournamentWindowTemplateData, resolvedLocations?: string[], payoutTable?: TournamentWindowTemplatePayoutTable[], payoutTableId?: string) {
     Object.defineProperty(this, 'tournament', { value: tournament });
 
     // Window data
@@ -176,6 +178,7 @@ class TournamentWindow {
     this.liveSessionAttributes = tournamentWindowTemplateData?.liveSessionAttributes;
     this.scoringRules = tournamentWindowTemplateData?.scoringRules;
     this.tiebreakerFormula = tournamentWindowTemplateData?.tiebreakerFormula;
+    this.payoutTableId = payoutTableId
     this.payoutTable = payoutTable;
     this.resolvedLocations = resolvedLocations;
   }

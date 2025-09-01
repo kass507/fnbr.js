@@ -190,6 +190,7 @@ export interface TournamentWindowTemplateData {
   liveSessionAttributes: string[];
   scoringRules: TournamentWindowTemplateScoringRule[];
   tiebreakerFormula: TournamentWindowTemplateTiebreakFormula;
+  payoutTableId: string;
   payoutTable: TournamentWindowTemplatePayoutTable[];
 }
 
