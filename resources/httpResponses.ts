@@ -129,7 +129,7 @@ export interface TournamentDisplayData {
   schedule_info: string;
   primary_color: string;
   flavor_description: string;
-  square_poster_image : string;
+  square_poster_image: string;
   poster_front_image: string | null;
   short_format_title: string;
   title_line_2: string;
@@ -141,6 +141,7 @@ export interface TournamentDisplayData {
   poster_fade_color: string;
   secondary_color: string;
   playlist_tile_image: string;
+  tournament_view_background_image: string | null;
   base_color: string;
   highlight_color: string;
   background_title: string;

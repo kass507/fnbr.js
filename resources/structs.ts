@@ -1075,6 +1075,7 @@ export interface TournamentImages {
   posterBackImage?: string | null;
   posterFrontImage?: string | null;
   playlistTileImage?: string | null;
+  tournamentViewBackgroundImage?: string | null;
 }
 
 export interface TournamentTexts {

@@ -142,6 +142,7 @@ class Tournament extends Base {
       posterBackImage: tournamentDisplayData.poster_back_image,
       posterFrontImage: tournamentDisplayData.poster_front_image,
       playlistTileImage: tournamentDisplayData.playlist_tile_image,
+      tournamentViewBackgroundImage: tournamentDisplayData.tournament_view_background_image,
     };
 
     this.texts = {
