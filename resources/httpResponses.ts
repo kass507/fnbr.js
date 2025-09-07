@@ -61,6 +61,7 @@ export interface TournamentWindowScoreLocation {
   scoreMode: string;
   scoreId: string;
   leaderboardId: string;
+  isMainWindowLeaderboard?: boolean;
   useIndividualScores?: boolean;
 }
 
