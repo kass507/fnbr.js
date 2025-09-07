@@ -73,6 +73,7 @@ export interface TournamentWindowMetadata {
   ScheduledMatchmakingInitialDelaySeconds?: number;
   SubgroupId: string;
   ScheduledMatchmakingMatchDelaySeconds?: number;
+  alternativeScoreLocationIndex?: number;
   liveSpectateAccessToken: string;
 }
 
