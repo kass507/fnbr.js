@@ -44,8 +44,10 @@ export interface TournamentsResponse {
   events: TournamentData[];
   templates: TournamentWindowTemplateData[];
   resolvedWindowLocations?: Record<string, string[]>;
+  scoreLocationScoringRuleSets: Record<string, string>;
   leaderboardDefs?: LeaderboardDef[];
   payoutTables?: Record<string, TournamentWindowTemplatePayoutTable[]>;
+  scoringRuleSets: Record<string, TournamentWindowTemplateScoringRule[]>;
 }
 
 export interface TournamentMetadata {

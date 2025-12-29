@@ -76,6 +76,10 @@ class TournamentWindow {
   public leaderboardDefs: Array<{
     leaderboardDefId: string;
     payoutTableId?: string;
+    rules: {
+      tiebreakerFormula?: TournamentWindowTemplateTiebreakFormula;
+      scoringRules?: TournamentWindowTemplateScoringRule[];
+    },
     payoutTable?: TournamentWindowTemplatePayoutTable[];
   }>;
 
@@ -183,6 +187,10 @@ class TournamentWindow {
         this.leaderboardDefs.push({
           leaderboardDefId: data.leaderboardDef.leaderboardDefId,
           payoutTableId: data.payoutTableId,
+          rules: {
+            tiebreakerFormula: data.tiebreakerFormula,
+            scoringRules: data.scoringRules,
+          },
           payoutTable: data.payoutTable
         });
       }

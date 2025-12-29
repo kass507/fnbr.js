@@ -13,6 +13,7 @@ import type {
   LeaderboardDef,
   TournamentData, TournamentDisplayData, TournamentsResponse, TournamentWindowResolvedData, TournamentWindowResults, TournamentWindowTemplateData,
   TournamentWindowTemplatePayoutTable,
+  TournamentWindowTemplateTiebreakFormula,
 } from '../../resources/httpResponses';
 
 /**
@@ -116,17 +117,20 @@ class TournamentManager extends Base {
         }
         const key = `${t.gameId}:${t.eventId}:${w.eventWindowId}`;
         const resolvedLocations = tournaments.resolvedWindowLocations?.[key] ?? [];
+        const scoreLocationScoringRuleSets = tournaments.scoreLocationScoringRuleSets?.[key] ?? undefined;
 
         const resolvedDataForWindow: TournamentWindowResolvedData[] = w.scoreLocations.map(scoreLocation => {
           const leaderboardDefId = scoreLocation.leaderboardDefId;
           let leaderboardDef: LeaderboardDef | undefined;
           let payoutTable: TournamentWindowTemplatePayoutTable[] | undefined;
           let payoutTableId: string | undefined;
+          let tiebreakerFormula: TournamentWindowTemplateTiebreakFormula | undefined;
 
           if (leaderboardDefId && tournaments.leaderboardDefs) {
             leaderboardDef = tournaments.leaderboardDefs.find(
               def => def.leaderboardDefId === leaderboardDefId
             );
+            tiebreakerFormula = leaderboardDef?.tiebreakerFormula;
 
             if (leaderboardDef?.payoutsConfig && tournaments.payoutTables) {
               payoutTableId = leaderboardDef.payoutsConfig.payoutTableIdFormat
@@ -134,6 +138,7 @@ class TournamentManager extends Base {
                 .replace('${round}', w.round.toString())
                 .replace('${windowId}', w.eventWindowId);
 
+            
               payoutTable = tournaments.payoutTables[payoutTableId];
             }
           }
@@ -142,6 +147,8 @@ class TournamentManager extends Base {
             locations: resolvedLocations,
             leaderboardDef,
             payoutTableId,
+            tiebreakerFormula,
+            scoring: scoreLocationScoringRuleSets,
             payoutTable,
           };
         });
@@ -200,17 +207,20 @@ class TournamentManager extends Base {
 
         const key = `${t.gameId}:${t.eventId}:${w.eventWindowId}`;
         const resolvedLocations = tournaments.resolvedWindowLocations?.[key] ?? [];
+        const scoreLocationScoringRuleSets = tournaments.scoreLocationScoringRuleSets?.[key] ?? undefined;
 
         const resolvedDataForWindow: TournamentWindowResolvedData[] = w.scoreLocations.map(scoreLocation => {
           const leaderboardDefId = scoreLocation.leaderboardDefId;
           let leaderboardDef: LeaderboardDef | undefined;
           let payoutTable: TournamentWindowTemplatePayoutTable[] | undefined;
           let payoutTableId: string | undefined;
+          let tiebreakerFormula: TournamentWindowTemplateTiebreakFormula | undefined;
 
           if (leaderboardDefId && tournaments.leaderboardDefs) {
             leaderboardDef = tournaments.leaderboardDefs.find(
               def => def.leaderboardDefId === leaderboardDefId
             );
+            tiebreakerFormula = leaderboardDef?.tiebreakerFormula;
 
             if (leaderboardDef?.payoutsConfig && tournaments.payoutTables) {
               payoutTableId = leaderboardDef.payoutsConfig.payoutTableIdFormat
@@ -226,6 +236,8 @@ class TournamentManager extends Base {
             locations: resolvedLocations,
             leaderboardDef,
             payoutTableId,
+            tiebreakerFormula,
+            scoring: scoreLocationScoringRuleSets,
             payoutTable,
           };
         });
