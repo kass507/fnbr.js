@@ -207,7 +207,8 @@ class TournamentManager extends Base {
 
         const key = `${t.gameId}:${t.eventId}:${w.eventWindowId}`;
         const resolvedLocations = tournaments.resolvedWindowLocations?.[key] ?? [];
-        const scoreLocationScoringRuleSets = tournaments.scoreLocationScoringRuleSets?.[key] ?? undefined;
+        const scoreLocationScoringRuleSet = tournaments.scoreLocationScoringRuleSets?.[key] ?? undefined;
+        const score = tournaments.scoringRuleSets[scoreLocationScoringRuleSet]
 
         const resolvedDataForWindow: TournamentWindowResolvedData[] = w.scoreLocations.map(scoreLocation => {
           const leaderboardDefId = scoreLocation.leaderboardDefId;
@@ -237,7 +238,7 @@ class TournamentManager extends Base {
             leaderboardDef,
             payoutTableId,
             tiebreakerFormula,
-            scoring: scoreLocationScoringRuleSets,
+            scoring: score,
             payoutTable,
           };
         });
