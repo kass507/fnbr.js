@@ -80,6 +80,8 @@ export interface TournamentWindowResolvedData {
   locations: string[];
   leaderboardDef?: LeaderboardDef;
   payoutTableId?: string;
+  tiebreakerFormula?: TournamentWindowTemplateTiebreakFormula;
+  scoringRules?: TournamentWindowTemplateScoringRule[];
   payoutTable?: TournamentWindowTemplatePayoutTable[];
 }
 
