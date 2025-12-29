@@ -238,7 +238,7 @@ class TournamentManager extends Base {
             leaderboardDef,
             payoutTableId,
             tiebreakerFormula,
-            scoring: score,
+            scoringRules: score,
             payoutTable,
           };
         });
