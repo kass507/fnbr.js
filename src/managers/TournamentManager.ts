@@ -127,13 +127,8 @@ class TournamentManager extends Base {
             leaderboardDef = tournaments.leaderboardDefs.find(
               def => def.leaderboardDefId === leaderboardDefId
             );
-
-            if (leaderboardDef?.payoutsConfig && tournaments.payoutTables) {
-              payoutTableId = leaderboardDef.payoutsConfig.payoutTableIdFormat
-                .replace('${eventId}', t.eventId)
-                .replace('${round}', w.round.toString())
-                .replace('${windowId}', w.eventWindowId);
-
+            payoutTableId = tournaments.scoreLocationPayoutTables?.[key];
+            if (payoutTableId && tournaments.payoutTables) {
               payoutTable = tournaments.payoutTables[payoutTableId];
             }
           }
@@ -212,12 +207,8 @@ class TournamentManager extends Base {
               def => def.leaderboardDefId === leaderboardDefId
             );
 
-            if (leaderboardDef?.payoutsConfig && tournaments.payoutTables) {
-              payoutTableId = leaderboardDef.payoutsConfig.payoutTableIdFormat
-                .replace('${eventId}', t.eventId)
-                .replace('${round}', w.round.toString())
-                .replace('${windowId}', w.eventWindowId);
-
+            payoutTableId = tournaments.scoreLocationPayoutTables?.[key];
+            if (payoutTableId && tournaments.payoutTables) {
               payoutTable = tournaments.payoutTables[payoutTableId];
             }
           }
