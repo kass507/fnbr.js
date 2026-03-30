@@ -56,75 +56,46 @@ export interface TournamentsResponse {
   resolvedWindowLocations?: Record<string, string[]>;
   leaderboardDefs?: LeaderboardDef[];
   scoreLocationPayoutTables?: Record<string, string>;
+  scoreLocationScoringRuleSets?: Record<string, string>;
   scoringRuleSets?: Record<string, TournamentWindowTemplateScoringRule[]>;
   payoutTables?: Record<string, TournamentWindowTemplatePayoutTable[]>;
 }
 
-export interface TournamentMetadata {
-  minimumAccountLevel: number;
-  pool: string;
-  tournamentType?: string;
-  webId?: string;
-  AccountLockType: string;
-  TeamLockType: string;
-  DisqualifyType: string;
-  RegionLockType: string;
+export interface TemplateContext {
+  eventId: string;
+  windowId: string;
+  round: number;
 }
-
-export interface TournamentWindowBlackoutPeriod {
+ 
+export interface TournamentData {
+  gameId: string;
+  eventId: string;
+  regions: Region[];
+  regionMappings: RegionMappings;
+  platforms: FullPlatform[];
+  platformMappings: PlatformMappings;
+  displayDataId: string;
+  eventGroup: string;
+  announcementTime: string;
+  appId?: any;
+  environment?: any;
+  metadata: TournamentMetadata;
+  eventWindows: TournamentWindowData[];
   beginTime: string;
   endTime: string;
-  recurrence: string;
 }
-
-export interface TournamentWindowScoreLocation {
-  scoreMode: string;
-  scoreId: string;
-  leaderboardId: string;
-  leaderboardDefId?: string;
-  isMainWindowLeaderboard?: boolean;
-  useIndividualScores?: boolean;
-}
-
-export interface TournamentWindowResolvedData {
-  locations: string[];
-  leaderboardDef?: LeaderboardDef;
-  payoutTableId?: string;
-  payoutTable?: TournamentWindowTemplatePayoutTable[];
-}
-
-export interface TournamentWindowMetadata {
-  VisualRound: number;
-  hideScoreLocationsIndexes?: number[];
-  RoundType: string;
-  ThresholdToAdvanceDivision: number;
-  divisionRank: number;
-  ServerReplays?: boolean;
-  ScheduledMatchmakingInitialDelaySeconds?: number;
-  SubgroupId: string;
-  ScheduledMatchmakingMatchDelaySeconds?: number;
-  liveSpectateAccessToken: string;
-}
-
-export interface LeaderboardDef {
-  gameId: string;
-  leaderboardDefId: string;
-  leaderboardStorageId: string;
-  leaderboardInstanceGroupingKeyFormat: string;
-  leaderboardInstanceIdFormat: string;
-  maxSessionHistorySize: number;
-  useIndividualScores: boolean;
-  tiebreakerFormula: any;
-  scoringRuleSetId: string;
-  clampsToZero: boolean;
-  payoutsConfig?: {
-    payoutTableIdFormat: string;
-    payoutDate: string;
-  };
-  hidePlayerScores: boolean;
-  percentileAccuracy: number;
-  requiredPlayerListings: any[];
-  discardZeroScore: boolean;
+ 
+export interface TournamentMetadata {
+  minimumAccountLevel?: number;
+  pool?: string;
+  tournamentType?: string;
+  webId?: string;
+  AccountLockType?: string;
+  TeamLockType?: string;
+  DisqualifyType?: string;
+  RegionLockType?: string;
+  requireSystemFeatures?: string[];
+  //[key: string]: any;
 }
 
 export interface TournamentWindowData {
@@ -145,9 +116,242 @@ export interface TournamentWindowData {
   requireNoneTokensCaller: string[];
   requireAllTokensCaller: any[];
   requireAnyTokensCaller: any[];
-  additionalRequirements: string[];
+  additionalRequirements: (string | string[])[];
   teammateEligibility: string;
+  regionMappings?: RegionMappings;
   metadata: TournamentWindowMetadata;
+}
+ 
+
+export interface TournamentWindowScoreLocation {
+  leaderboardDefId?: string;
+  isMainWindowLeaderboard?: boolean;
+  scoreMode?: string;
+  scoreId?: string;
+  leaderboardId?: string;
+  useIndividualScores?: boolean;
+}
+
+export interface ResolvedScoreLocation {
+  leaderboardDefId: string;
+  isMainWindowLeaderboard: boolean;
+  leaderboardDef?: LeaderboardDef;
+  leaderboardEventId?: string;
+  leaderboardEventWindowId?: string;
+  payoutTableId?: string;
+  payoutTables?: TournamentWindowTemplatePayoutTable[];
+  scoringRuleSetId?: string;
+  scoringRules?: TournamentWindowTemplateScoringRule[];
+}
+
+export interface TournamentWindowMetadata {
+  VisualRound?: number;
+  hideScoreLocationsIndexes?: number[];
+  RoundType?: string;
+  ThresholdToAdvanceDivision?: number; 
+  divisionRank?: number;
+  ServerReplays?: boolean;
+  ScheduledMatchmakingInitialDelaySeconds?: number;
+  SubgroupId?: string;
+  ScheduledMatchmakingMatchDelaySeconds?: number;
+  liveSpectateAccessToken?: string;
+  asyncPayoutsExclusiveLeaderboardDefs?: string[];
+  defaultLeaderboardByRank?: Record<string, string>;
+  RankTrackTypeForMatchStatsPrefixes?: string;
+  //[key: string]: any;
+}
+ 
+export interface TournamentWindowBlackoutPeriod {
+  beginTime: string;
+  endTime: string;
+  recurrence: string;
+}
+
+export interface LeaderboardDef {
+  gameId: string;
+  leaderboardDefId: string;
+  leaderboardStorageId: string;
+  leaderboardInstanceGroupingKeyFormat: string;
+  leaderboardInstanceIdFormat: string;
+  maxSessionHistorySize: number;
+  useIndividualScores: boolean;
+  tiebreakerFormula: TournamentTiebreakFormula | null;
+  scoringRuleSetId: string;
+  clampsToZero: boolean;
+  payoutsConfig?: LeaderboardPayoutsConfig;
+  hidePlayerScores: boolean;
+  percentileAccuracy: number;
+  requiredPlayerListings: any[];
+  discardZeroScore: boolean;
+}
+ 
+
+export interface LeaderboardPayoutsConfig {
+  payoutTableIdFormat: string;
+  payoutDate: string;
+}
+
+ 
+export interface TournamentWindowTemplateScoringRule {
+  trackedStat: string;
+  matchRule: string;
+  rewardTiers: TournamentScoringRewardTier[];
+}
+ 
+export interface TournamentScoringRewardTier {
+  keyValue: number;
+  pointsEarned: number;
+  multiplicative: boolean;
+}
+ 
+export interface TournamentWindowTemplatePayoutTable {
+  scoreId?: string;
+  scoringType: string;
+  ranks: TournamentPayoutRank[];
+}
+ 
+export interface TournamentPayoutRank {
+  threshold: number;
+  payouts: TournamentPayoutReward[];
+  scoreId?: string;
+}
+
+export interface TournamentPayoutReward {
+  rewardType: string;
+  rewardMode: string;
+  value: string;
+  quantity: number;
+  notifiesPlayer?: boolean;
+}
+
+export interface TournamentTiebreakFormula {
+  basePointsBits: number;
+  components: TournamentTiebreakComponent[];
+}
+ 
+export interface TournamentTiebreakComponent {
+  trackedStat: string;
+  bits: number;
+  aggregation: string;
+  multiplier?: number;
+}
+
+export interface TournamentWindowTemplateData {
+  gameId: string;
+  eventTemplateId: string;
+  playlistId: string;
+  matchCap: number;
+  liveSessionAttributes: string[];
+  scoringRules: TournamentWindowTemplateScoringRule[];
+  tiebreakerFormula: TournamentTiebreakFormula;
+  payoutTable: TournamentWindowTemplatePayoutTable[];
+}
+
+export interface TournamentDisplayData {
+  title_color: string;
+  loading_screen_image: string;
+  background_text_color: string;
+  background_right_color: string;
+  poster_back_image: string;
+  _type: string;
+  pin_earned_text: string;
+  tournament_display_id: string;
+  schedule_info: string;
+  primary_color: string;
+  flavor_description: string;
+  square_poster_image: string;
+  poster_front_image: string;
+  short_format_title: string;
+  title_line_2: string;
+  title_line_1: string;
+  shadow_color: string;
+  details_description: string;
+  background_left_color: string;
+  long_format_title: string;
+  poster_fade_color: string;
+  secondary_color: string;
+  playlist_tile_image: string;
+  tournament_view_background_image: string;
+  base_color: string;
+  highlight_color: string;
+  background_title: string;
+  pin_score_requirement?: number;
+}
+ 
+export interface TournamentWindowResolvedData {
+  locations: string[];
+  leaderboardDef?: LeaderboardDef;
+  payoutTableId?: string;
+  payoutTable?: TournamentWindowTemplatePayoutTable[];
+  scoringRuleSetId?: string;
+  scoringRules?: TournamentWindowTemplateScoringRule[];
+}
+
+export interface TournamentWindowTemplate {
+  windowId: string;
+  templateData: TournamentWindowTemplateData;
+}
+ 
+export interface TournamentWindowResults {
+  gameId: string;
+  eventId: string;
+  eventWindowId: string;
+  page: number;
+  totalPages: number;
+  updatedTime: string;
+  entries: TournamentResultEntry[];
+  liveSessions: any;
+}
+ 
+export interface TournamentResultEntry {
+  gameId: string;
+  eventId: string;
+  eventWindowId: string;
+  teamAccountIds: string[];
+  liveSessionId?: string;
+  pointsEarned: number;
+  score: number;
+  rank: number;
+  percentile: number;
+  pointBreakdown: Record<string, TournamentPointBreakdown>;
+  sessionHistory: TournamentSessionHistory[];
+  tokens: string[];
+  teamId: string;
+}
+ 
+export interface TournamentPointBreakdown {
+  timesAchieved: number;
+  pointsEarned: number;
+}
+ 
+export interface TournamentSessionHistory {
+  sessionId: string;
+  endTime: string;
+  trackedStats: TournamentTrackedStats;
+}
+ 
+export interface TournamentTrackedStats {
+  PLACEMENT_STAT_INDEX: number;
+  TIME_ALIVE_STAT: number;
+  TEAM_ELIMS_STAT_INDEX: number;
+  MATCH_PLAYED_STAT: number;
+  PLACEMENT_TIEBREAKER_STAT: number;
+  VICTORY_ROYALE_STAT: number;
+  //[key: string]: number;
+}
+
+export interface TournamentWindowBlackoutPeriod {
+  beginTime: string;
+  endTime: string;
+  recurrence: string;
+}
+
+
+export interface TournamentWindowResolvedData {
+  locations: string[];
+  leaderboardDef?: LeaderboardDef;
+  payoutTableId?: string;
+  payoutTable?: TournamentWindowTemplatePayoutTable[];
 }
 
 export interface TournamentData {
@@ -199,30 +403,6 @@ export interface TournamentDisplayData {
   pin_score_requirement?: number;
 }
 
-export interface TournamentWindowTemplatePayoutTable {
-  scoreId: string;
-  scoringType: string;
-  ranks: {
-    threshold: number;
-    payouts: {
-      rewardType: string;
-      rewardMode: string;
-      value: string;
-      quantity: number;
-    }[];
-  }[];
-}
-
-export interface TournamentWindowTemplateTiebreakFormula {
-  basePointsBits: number;
-  components: {
-    trackedStat: string;
-    bits: number;
-    multiplier?: number;
-    aggregation: string;
-  }[];
-}
-
 export interface TournamentWindowTemplateScoringRule {
   trackedStat: string;
   matchRule: string;
@@ -240,50 +420,10 @@ export interface TournamentWindowTemplateData {
   matchCap: number;
   liveSessionAttributes: string[];
   scoringRules: TournamentWindowTemplateScoringRule[];
-  tiebreakerFormula: TournamentWindowTemplateTiebreakFormula;
+  tiebreakerFormula: TournamentTiebreakFormula;
   payoutTable: TournamentWindowTemplatePayoutTable[];
 }
 
-export interface TournamentWindowResults {
-  gameId: string;
-  eventId: string;
-  eventWindowId: string;
-  page: number;
-  totalPages: number;
-  updatedTime: string;
-  entries: {
-    gameId: string;
-    eventId: string;
-    eventWindowId: string;
-    teamAccountIds: string[];
-    liveSessionId?: string;
-    pointsEarned: number;
-    score: number;
-    rank: number;
-    percentile: number;
-    pointBreakdown: {
-      [statIndex: string]: {
-        timesAchieved: number;
-        pointsEarned: number;
-      };
-    };
-    sessionHistory: {
-      sessionId: string;
-      endTime: string;
-      trackedStats: {
-        PLACEMENT_STAT_INDEX: number;
-        TIME_ALIVE_STAT: number;
-        TEAM_ELIMS_STAT_INDEX: number;
-        MATCH_PLAYED_STAT: number;
-        PLACEMENT_TIEBREAKER_STAT: number;
-        VICTORY_ROYALE_STAT: number;
-      };
-    }[];
-    tokens: string[];
-    teamId: string;
-  }[];
-  liveSessions: any;
-}
 
 export interface BlurlStreamMasterPlaylistData {
   type: 'master';
