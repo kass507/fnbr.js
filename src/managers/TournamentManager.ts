@@ -4,15 +4,15 @@ import Base from '../Base';
 import MatchNotFoundError from '../exceptions/MatchNotFoundError';
 import EventTokens from '../structures/EventTokens';
 import Tournament from '../structures/Tournament';
+import { resolveScoreLocation}  from '../util/ResolvedLocation'; 
 import { AuthSessionStoreKey } from '../../resources/enums';
 import type { ResponseType } from 'axios';
 import type {
   FullPlatform, Language, Region, TournamentSessionMetadata, TournamentWindowTemplate,
 } from '../../resources/structs';
 import type {
-  LeaderboardDef,
-  TournamentData, TournamentDisplayData, TournamentsResponse, TournamentWindowResolvedData, TournamentWindowResults, TournamentWindowTemplateData,
-  TournamentWindowTemplatePayoutTable,
+  TournamentDisplayData, TournamentsResponse, TournamentWindowResults,
+  TemplateContext, ResolvedScoreLocation
 } from '../../resources/httpResponses';
 
 /**
@@ -70,6 +70,63 @@ class TournamentManager extends Base {
   }
 
   /**
+   * Tournament[] constructor
+   */
+  private buildTournaments(
+    tournaments: TournamentsResponse,
+    tournamentsInfo: any
+  ): Tournament[] {
+    const constructedTournaments: Tournament[] = [];
+ 
+    for (const t of tournaments.events) {
+      let tournamentDisplayData: TournamentDisplayData | undefined =
+        tournamentsInfo.tournament_info?.tournaments?.find(
+          (td: TournamentDisplayData) => td.tournament_display_id === t.displayDataId
+        );
+ 
+      if (!tournamentDisplayData) {
+        tournamentDisplayData = (Object.values(tournamentsInfo) as any[]).find(
+          (tdr: any) => tdr.tournament_info?.tournament_display_id === t.displayDataId
+        )?.tournament_info;
+      }
+ 
+      if (!tournamentDisplayData) continue;
+      const templates: TournamentWindowTemplate[] = [];
+      const windowsResolvedData = new Map<string, ResolvedScoreLocation[]>();
+ 
+      for (const w of t.eventWindows) {
+        const template = tournaments.templates.find(
+          (tt) => tt.eventTemplateId === w.eventTemplateId
+        );
+        if (template) {
+          templates.push({ windowId: w.eventWindowId, templateData: template });
+        }
+ 
+        const ctx: TemplateContext = {
+          eventId: t.eventId,
+          windowId: w.eventWindowId,
+          round: w.round,
+        };
+ 
+        const windowKey = `${t.gameId}:${t.eventId}:${w.eventWindowId}`;
+ 
+        const resolvedScoreLocations: ResolvedScoreLocation[] = w.scoreLocations.map(
+          (scoreLocation) => resolveScoreLocation(scoreLocation, tournaments, ctx, windowKey)
+        );
+ 
+        windowsResolvedData.set(w.eventWindowId, resolvedScoreLocations);
+      }
+ 
+      constructedTournaments.push(
+        new Tournament(this.client, t, tournamentDisplayData, templates, windowsResolvedData)
+      );
+    }
+ 
+    return constructedTournaments;
+  }
+ 
+
+  /**
    * Fetches the current and past Battle Royale tournaments
    * @param language The language of the tournament data
    * @param region The region
@@ -77,159 +134,45 @@ class TournamentManager extends Base {
    * @throws {EpicgamesAPIError}
    */
   public async get(language: Language = 'en', region: Region = 'EU', platform: FullPlatform = 'Windows') {
-    const [dataEvents, tournamentsInfo] = await Promise.all([
+    const [tournaments, tournamentsInfo] = await Promise.all([
       this.client.http.epicgamesRequest({
         method: 'GET',
         url: `${Endpoints.BR_TOURNAMENTS_DOWNLOAD}/${this.client.user.self!.id}?region=${region}`
           + `&platform=${platform}&teamAccountIds=${this.client.user.self!.id}`,
-      }, AuthSessionStoreKey.Fortnite),
+      }, AuthSessionStoreKey.Fortnite) as Promise<TournamentsResponse>,
       this.client.http.epicgamesRequest({
         method: 'GET',
         url: `${Endpoints.BR_NEWS}/tournamentinformation?lang=${language}`,
       }, AuthSessionStoreKey.Fortnite),
     ]);
-    const tournaments: TournamentsResponse = dataEvents;
-
-    const constuctedTournaments: Tournament[] = [];
-
-    tournaments.events.forEach((t: TournamentData) => {
-      let tournamentDisplayData = tournamentsInfo.tournament_info?.tournaments
-        ?.find((td: TournamentDisplayData) => td.tournament_display_id === t.displayDataId);
-
-      if (!tournamentDisplayData) {
-        tournamentDisplayData = (Object.values(tournamentsInfo) as any[])
-          .find((tdr: any) => tdr.tournament_info?.tournament_display_id === t.displayDataId)?.tournament_info;
-      }
-
-      if (!tournamentDisplayData) {
-        return;
-      }
-
-      const templates: TournamentWindowTemplate[] = [];
-      const windowsResolvedData: Map<string, TournamentWindowResolvedData[]> = new Map();
-
-      t.eventWindows.forEach((w) => {
-        const template = tournaments.templates
-          .find((tt: TournamentWindowTemplateData) => tt.eventTemplateId === w.eventTemplateId);
-        if (template) {
-          templates.push({ windowId: w.eventWindowId, templateData: template });
-        }
-        const key = `${t.gameId}:${t.eventId}:${w.eventWindowId}`;
-        const resolvedLocations = tournaments.resolvedWindowLocations?.[key] ?? [];
-
-        const resolvedDataForWindow: TournamentWindowResolvedData[] = w.scoreLocations.map(scoreLocation => {
-          const leaderboardDefId = scoreLocation.leaderboardDefId;
-          let leaderboardDef: LeaderboardDef | undefined;
-          let payoutTable: TournamentWindowTemplatePayoutTable[] | undefined;
-          let payoutTableId: string | undefined;
-
-          if (leaderboardDefId && tournaments.leaderboardDefs) {
-            leaderboardDef = tournaments.leaderboardDefs.find(
-              def => def.leaderboardDefId === leaderboardDefId
-            );
-            payoutTableId = tournaments.scoreLocationPayoutTables?.[key];
-            if (payoutTableId && tournaments.payoutTables) {
-              payoutTable = tournaments.payoutTables[payoutTableId];
-            }
-          }
-
-          return {
-            locations: resolvedLocations,
-            leaderboardDef,
-            payoutTableId,
-            payoutTable,
-          };
-        });
-
-        windowsResolvedData.set(w.eventWindowId, resolvedDataForWindow);
-      });
-
-      constuctedTournaments.push(new Tournament(this.client, t, tournamentDisplayData, templates, windowsResolvedData));
-    });
-
-    return constuctedTournaments;
+ 
+    return this.buildTournaments(tournaments, tournamentsInfo);
   }
-
+ 
   /**
-  * Gets all current tournament events or events with past events
-  * @param language The language of the tournament data
-  * @param pastEvents Show past events
-  * @throws {EpicgamesAPIError}
-  */
+   * Gets all current tournament events or events with past events
+   * @param language The language of the tournament data
+   * @param pastEvents Show past events
+   * @throws {EpicgamesAPIError}
+   */
   public async getData(language: Language = 'en', pastEvents = false) {
-    const tournaments: TournamentsResponse = await this.client.http.epicgamesRequest({
-      method: 'GET',
-      url: `${Endpoints.BR_TOURNAMENTS}/${this.client.user.self!.id}?showPastEvents=${pastEvents}`,
-    }, AuthSessionStoreKey.Fortnite);
-
-    const tournamentsInfo = await this.client.http.epicgamesRequest({
-      method: 'GET',
-      url: `${Endpoints.BR_NEWS}/tournamentinformation?lang=${language}`,
-    }, AuthSessionStoreKey.Fortnite);
-
-    const constructedTournaments: Tournament[] = [];
-
-    tournaments.events.forEach((t: TournamentData) => {
-      let tournamentDisplayData = tournamentsInfo.tournament_info?.tournaments
-        ?.find((td: TournamentDisplayData) => td.tournament_display_id === t.displayDataId);
-
-      if (!tournamentDisplayData) {
-        tournamentDisplayData = (Object.values(tournamentsInfo) as any[])
-          .find((tdr: any) => tdr.tournament_info?.tournament_display_id === t.displayDataId)?.tournament_info;
-      }
-
-      if (!tournamentDisplayData) {
-        return;
-      }
-
-      const templates: TournamentWindowTemplate[] = [];
-      const windowsResolvedData: Map<string, TournamentWindowResolvedData[]> = new Map();
-
-      t.eventWindows.forEach((w) => {
-        const template = tournaments.templates
-          .find((tt: TournamentWindowTemplateData) => tt.eventTemplateId === w.eventTemplateId);
-
-        if (template) {
-          templates.push({ windowId: w.eventWindowId, templateData: template });
-        }
-
-        const key = `${t.gameId}:${t.eventId}:${w.eventWindowId}`;
-        const resolvedLocations = tournaments.resolvedWindowLocations?.[key] ?? [];
-
-        const resolvedDataForWindow: TournamentWindowResolvedData[] = w.scoreLocations.map(scoreLocation => {
-          const leaderboardDefId = scoreLocation.leaderboardDefId;
-          let leaderboardDef: LeaderboardDef | undefined;
-          let payoutTable: TournamentWindowTemplatePayoutTable[] | undefined;
-          let payoutTableId: string | undefined;
-
-          if (leaderboardDefId && tournaments.leaderboardDefs) {
-            leaderboardDef = tournaments.leaderboardDefs.find(
-              def => def.leaderboardDefId === leaderboardDefId
-            );
-
-            payoutTableId = tournaments.scoreLocationPayoutTables?.[key];
-            if (payoutTableId && tournaments.payoutTables) {
-              payoutTable = tournaments.payoutTables[payoutTableId];
-            }
-          }
-
-          return {
-            locations: resolvedLocations,
-            leaderboardDef,
-            payoutTableId,
-            payoutTable,
-          };
-        });
-
-        windowsResolvedData.set(w.eventWindowId, resolvedDataForWindow);
-      });
-
-      constructedTournaments.push(
-        new Tournament(this.client, t, tournamentDisplayData, templates, windowsResolvedData)
-      );
-    });
-
-    return constructedTournaments;
+    const tournaments: TournamentsResponse = await this.client.http.epicgamesRequest(
+      {
+        method: 'GET',
+        url: `${Endpoints.BR_TOURNAMENTS}/${this.client.user.self!.id}?showPastEvents=${pastEvents}`,
+      },
+      AuthSessionStoreKey.Fortnite
+    );
+ 
+    const tournamentsInfo = await this.client.http.epicgamesRequest(
+      {
+        method: 'GET',
+        url: `${Endpoints.BR_NEWS}/tournamentinformation?lang=${language}`,
+      },
+      AuthSessionStoreKey.Fortnite
+    );
+ 
+    return this.buildTournaments(tournaments, tournamentsInfo);
   }
 
   /**

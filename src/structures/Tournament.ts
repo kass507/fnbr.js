@@ -1,8 +1,8 @@
 import Base from '../Base';
 import TournamentWindow from './TournamentWindow';
 import type {
-  PlatformMappings, RegionMappings, TournamentData, TournamentDisplayData, TournamentMetadata,
-  TournamentWindowResolvedData,
+  PlatformMappings, RegionMappings, TournamentData, ResolvedScoreLocation,
+  TournamentDisplayData, TournamentMetadata,
 } from '../../resources/httpResponses';
 import type {
   FullPlatform, Region, TournamentColors, TournamentImages, TournamentTexts, TournamentWindowTemplate,
@@ -109,7 +109,7 @@ class Tournament extends Base {
     tournamentData: TournamentData,
     tournamentDisplayData: TournamentDisplayData,
     templates: TournamentWindowTemplate[],
-    windowsResolvedData?: Map<string, TournamentWindowResolvedData[]>
+    windowsResolvedData?: Map<string, ResolvedScoreLocation[]>
   ) {
     super(client);
 
