@@ -89,6 +89,7 @@ export interface TournamentMetadata {
   minimumAccountLevel?: number;
   pool?: string;
   tournamentType?: string;
+  IsDuplicate?: boolean;
   webId?: string;
   AccountLockType?: string;
   TeamLockType?: string;
